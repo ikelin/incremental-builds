@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>Incremental Builds</name>
-  <description>Maven Incremental Build Extension for GIT.</description>
+  <description>Maven Incremental Builds Extension for GIT.</description>
   <url>https://github.com/ikelin/incremental-builds.git</url>
 
   <licenses>
@@ -28,9 +28,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/ikelin/cuckoofilter.git</connection>
-    <developerConnection>scm:git:git@github.com/ikelin/cuckoofilter.git</developerConnection>
-    <url>http://github.com/ikelin/cuckoofilter/tree/master</url>
+    <connection>scm:git:git://github.com/ikelin/incremental-builds.git</connection>
+    <developerConnection>scm:git:git@github.com/ikelin/incremental-builds.git</developerConnection>
+    <url>http://github.com/ikelin/incremental-builds/tree/master</url>
   </scm>
 
   <properties>

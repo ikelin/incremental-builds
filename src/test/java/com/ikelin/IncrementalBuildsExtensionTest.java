@@ -1,7 +1,7 @@
 package com.ikelin;
 
 import static com.ikelin.IncrementalBuildsExtension.PROPERTY_PREFIX;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.logging.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,12 +20,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
 @ExtendWith(MockitoExtension.class)
-class IncrementalBuildsExtensionTest {
+public class IncrementalBuildsExtensionTest {
 
   @Mock
   private Logger logger;
@@ -44,44 +42,45 @@ class IncrementalBuildsExtensionTest {
   private IncrementalBuildsExtension incrementalBuildsExtension;
 
   @BeforeEach
-  void beforeEach() throws NoSuchFieldException, IllegalAccessException {
+  public void beforeEach() throws NoSuchFieldException, IllegalAccessException {
     Field loggerField = IncrementalBuildsExtension.class.getDeclaredField("logger");
     loggerField.setAccessible(true);
     loggerField.set(incrementalBuildsExtension, logger);
   }
 
   @Test
-  void testExtensionNotEnabled() throws IOException, GitAPIException {
+  public void testExtensionNotEnabled() {
     when(properties.getProperty(PROPERTY_PREFIX + ".enable")).thenReturn(Boolean.FALSE.toString());
     when(session.getUserProperties()).thenReturn(properties);
 
     incrementalBuildsExtension.afterProjectsRead(session);
 
-    verify(incrementalBuilds, never()).build();
+    verify(incrementalBuilds, never()).getChangedProjects(any(RevInfo.class));
   }
 
   @Test
-  void testExtensionEnabled() throws IOException, GitAPIException {
+  public void testExtensionEnabled() {
     when(properties.getProperty(PROPERTY_PREFIX + ".enable")).thenReturn(Boolean.TRUE.toString());
     when(session.getUserProperties()).thenReturn(properties);
-    doReturn(incrementalBuilds).when(incrementalBuildsExtension).getIncrementalBuilds(logger, session);
+    doReturn(incrementalBuilds).when(incrementalBuildsExtension)
+        .getIncrementalBuilds(logger, session);
 
     incrementalBuildsExtension.afterProjectsRead(session);
 
-    verify(incrementalBuilds).build();
+    verify(incrementalBuilds).getChangedProjects(any(RevInfo.class));
   }
 
   @Test
-  void testIncrementBuildThrowsGitAPIException() throws IOException, GitAPIException {
+  public void testIncrementBuildException() {
     when(properties.getProperty(PROPERTY_PREFIX + ".enable")).thenReturn(Boolean.TRUE.toString());
     when(session.getUserProperties()).thenReturn(properties);
-    doReturn(incrementalBuilds).when(incrementalBuildsExtension).getIncrementalBuilds(logger, session);
-    GitAPIException exception = mock(GitAPIException.class);
-    doThrow(exception).when(incrementalBuilds).build();
+    doReturn(incrementalBuilds).when(incrementalBuildsExtension)
+        .getIncrementalBuilds(logger, session);
+    RuntimeException exception = mock(RuntimeException.class);
+    doThrow(exception).when(incrementalBuilds).getChangedProjects(any(RevInfo.class));
 
     incrementalBuildsExtension.afterProjectsRead(session);
 
-    assertThrows(GitAPIException.class, () -> incrementalBuilds.build());
     verify(logger).error(anyString(), eq(exception));
   }
 }

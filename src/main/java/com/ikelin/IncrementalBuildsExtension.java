@@ -1,14 +1,15 @@
 package com.ikelin;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 @Component(role = AbstractMavenLifecycleParticipant.class)
@@ -28,9 +29,30 @@ public class IncrementalBuildsExtension extends AbstractMavenLifecycleParticipan
     }
 
     logger.debug("Incremental Builds extension is enabled");
+
     try {
-      getIncrementalBuilds(logger, session).build();
-    } catch (IOException | GitAPIException ex) {
+      RevInfo revInfo = RevInfo.create(session.getUserProperties());
+      IncrementalBuilds incrementalBuilds = getIncrementalBuilds(logger, session);
+      List<MavenProject> changedProjects = incrementalBuilds.getChangedProjects(revInfo);
+
+      // set session projects to changed projects
+      // otherwise, set goals to validate
+      if (changedProjects.isEmpty()) {
+        List<String> goals = session.getGoals();
+        goals.clear();
+        goals.add("validate");
+        logger.info("");
+        logger.info("No project has changed since " + revInfo.getType() + " " + revInfo.getValue());
+      } else {
+        session.setProjects(changedProjects);
+        logger.info("Projects changed since " + revInfo.getType() + " " + revInfo.getValue() + ":");
+        logger.info("");
+        for (MavenProject project : changedProjects) {
+          logger.info(project.getName());
+        }
+      }
+      logger.info("");
+    } catch (Exception ex) {
       logger.error("Failed to perform incremental builds", ex);
     }
   }

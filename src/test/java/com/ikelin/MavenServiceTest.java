@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
-class MavenServiceTest {
+public class MavenServiceTest {
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   private MavenSession session;
@@ -34,12 +34,12 @@ class MavenServiceTest {
   private MavenService mavenService;
 
   @BeforeEach
-  void beforeEach() {
+  public void beforeEach() {
     projects = new ArrayList<>();
   }
 
   @Test
-  void testChangedProjects() {
+  public void testChangedProjects() {
     // changed project
     MavenProject project = createMavenProject("project", "/modules/project", "org.organization1",
         "project1", "1.0");
@@ -63,7 +63,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithDifferentProjects() {
+  public void testChangedProjectsWithDifferentProjects() {
     // changed project
     MavenProject project1 = createMavenProject("project1", "/modules/project1", "org.organization1",
         "project1", "1.0");
@@ -90,7 +90,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithParentChildProjects() {
+  public void testChangedProjectsWithParentChildProjects() {
     // changed project
     MavenProject parentProject = createMavenProject("parent-project", "/modules/parent-project",
         "org.organization", "parent-project", "1.0");
@@ -123,7 +123,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithDependentProjectsImpacted() {
+  public void testChangedProjectsWithDependentProjectsImpacted() {
     // changed project
     MavenProject project1 = createMavenProject("project1", "/modules/project1", "org.organization",
         "project1", "1.0");
@@ -154,7 +154,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithDependentProjectsNotImpacted() {
+  public void testChangedProjectsWithDependentProjectsNotImpacted() {
     // changed project
     MavenProject project1 = createMavenProject("project1", "/modules/project1", "org.organization",
         "project1", "1.0");
@@ -184,7 +184,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithDependentProjectsNotImpactedDifferentVersion() {
+  public void testChangedProjectsWithDependentProjectsNotImpactedDifferentVersion() {
     // changed project
     MavenProject project1v2 = createMavenProject("project1", "/modules/project1",
         "org.organization", "project1", "2.0");
@@ -215,7 +215,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testChangedProjectsWithTransitiveDependentProjectsImpacted() {
+  public void testChangedProjectsWithTransitiveDependentProjectsImpacted() {
     // changed project
     MavenProject project1 = createMavenProject("project1", "/modules/project1", "org.organization1",
         "project1", "1.0");
@@ -262,7 +262,7 @@ class MavenServiceTest {
   }
 
   @Test
-  void testNoChangedProjectsDifferentProject() {
+  public void testNoChangedProjectsDifferentProject() {
     // changed project
     MavenProject project = createMavenProject("project", "/modules/project", "org.organization1",
         "project1", "1.0");

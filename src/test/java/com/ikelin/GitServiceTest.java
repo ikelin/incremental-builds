@@ -15,7 +15,6 @@ import com.ikelin.RevInfo.Type;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.lib.ObjectId;
@@ -37,12 +36,10 @@ import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
-class GitServiceTest {
+public class GitServiceTest {
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   private Git git;
-
-  private Path basePath;
 
   @Mock
   private AbstractTreeIterator treeIterator;
@@ -50,21 +47,21 @@ class GitServiceTest {
   private GitService gitService;
 
   @BeforeEach
-  void beforeEach() {
-    basePath = Paths.get("/modules");
+  public void beforeEach() {
+    Path basePath = Paths.get("/modules");
     gitService = Mockito.spy(new GitService(git, basePath));
   }
 
   @Test
-  void testDiffInvalidRevInfoValue() throws IOException {
+  public void testDiffInvalidRevInfoValue() throws IOException {
     when(git.getRepository().resolve(anyString())).thenReturn(null);
 
     RevInfo revInfo = new RevInfo(Type.COMMIT, "12345");
-    assertThrows(InvalidRefNameException.class, () -> gitService.getChangedFilePaths(revInfo));
+    assertThrows(RuntimeException.class, () -> gitService.getChangedFilePaths(revInfo));
   }
 
   @Test
-  void testDiffAdd() throws IOException, GitAPIException {
+  public void testDiffAdd() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
 
@@ -86,7 +83,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testDiffDelete() throws IOException, GitAPIException {
+  public void testDiffDelete() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
 
@@ -108,7 +105,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testDiffDeleteModify() throws IOException, GitAPIException {
+  public void testDiffDeleteModify() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
 
@@ -130,7 +127,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testDiffDeleteCopy() throws IOException, GitAPIException {
+  public void testDiffDeleteCopy() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
 
@@ -156,7 +153,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testDiffDeleteRename() throws IOException, GitAPIException {
+  public void testDiffDeleteRename() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
 
@@ -182,7 +179,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testDiffByBranch() throws IOException, GitAPIException {
+  public void testDiffByBranch() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(null, mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
     when(git.diff().setOldTree(any(AbstractTreeIterator.class))
@@ -197,7 +194,7 @@ class GitServiceTest {
   }
 
   @Test
-  void testUncommitted() throws IOException, GitAPIException {
+  public void testUncommitted() throws IOException, GitAPIException {
     when(git.getRepository().resolve(anyString())).thenReturn(mock(ObjectId.class));
     doReturn(treeIterator).when(gitService).getTreeIterator(any(ObjectId.class));
     when(git.diff().setOldTree(any(AbstractTreeIterator.class))

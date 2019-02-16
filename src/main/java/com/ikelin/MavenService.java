@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Provides Maven operations.
+ */
 public class MavenService {
 
   private final MavenSession session;
@@ -18,7 +21,7 @@ public class MavenService {
   /**
    * Creates a new {@code MavenService} based on the given {@code MavenSession}.
    *
-   * @param session the {@code MavenSession} to build this {@code MavenService} with
+   * @param session the {@code MavenSession} this {@code MavenService} is based on
    */
   public MavenService(final MavenSession session) {
     this.session = session;
@@ -93,9 +96,9 @@ public class MavenService {
   private boolean dependsOnVersion(final MavenProject project,
       final MavenProject dependsOnProject) {
     for (Dependency dependency : project.getDependencies()) {
-      if (dependency.getGroupId().equals(dependsOnProject.getGroupId()) &&
-          dependency.getArtifactId().equals(dependsOnProject.getArtifactId()) &&
-          dependency.getVersion().equals(dependsOnProject.getVersion())) {
+      if (dependency.getGroupId().equals(dependsOnProject.getGroupId())
+          && dependency.getArtifactId().equals(dependsOnProject.getArtifactId())
+          && dependency.getVersion().equals(dependsOnProject.getVersion())) {
         return true;
       }
     }

@@ -1,11 +1,11 @@
 package com.ikelin;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -17,25 +17,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Detects projects that changed or impacted by the changes.
+ */
 public class IncrementalBuilds {
 
   private final Logger logger;
   private final MavenSession session;
 
+  /**
+   * Creates a new instance of {@code IncrementalBuilds}.
+   */
   public IncrementalBuilds(final Logger logger, final MavenSession session) {
     this.logger = logger;
     this.session = session;
   }
 
   /**
-   * Builds only projects that changed or impacted by the changes.  If no projects have changed,
-   * just run Maven goal {@code validate}.
+   * Returns a list of projects that changed or impacted by the changes between current working
+   * branch and the provided {@RevInfo}.
+   *
+   * @param revInfo the revision info to detect the changes against
+   * @return list of changed projects
    */
-  public void build() throws IOException, GitAPIException {
-    // get properties
-    RevInfo revInfo = RevInfo.create(session.getUserProperties());
-
-    // get changed projects
+  public List<MavenProject> getChangedProjects(RevInfo revInfo) {
     List<MavenProject> changedProjects = new ArrayList<>();
     try (Git git = getGit(session)) {
       Path basePath = gitBasePath(git);
@@ -45,25 +50,10 @@ public class IncrementalBuilds {
       Set<Path> paths = gitService.getChangedFilePaths(revInfo);
       Set<MavenProject> projects = mavenService.getChangedProjects(paths);
       changedProjects.addAll(projects);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
     }
-
-    // set session projects to changed projects
-    // otherwise, set goals to validate
-    if (changedProjects.isEmpty()) {
-      List<String> goals = session.getGoals();
-      goals.clear();
-      goals.add("validate");
-      logger.info("");
-      logger.info("No project has changed since " + revInfo.getType() + " " + revInfo.getValue());
-    } else {
-      session.setProjects(changedProjects);
-      logger.info("Projects changed since " + revInfo.getType() + " " + revInfo.getValue() + ":");
-      logger.info("");
-      for (MavenProject project : changedProjects) {
-        logger.info(project.getName());
-      }
-    }
-    logger.info("");
+    return changedProjects;
   }
 
   @VisibleForTesting

@@ -1,6 +1,7 @@
 package com.ikelin;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -19,6 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Provides GIT operations.
+ */
 public class GitService {
 
   private final Git git;
@@ -27,7 +31,7 @@ public class GitService {
   /**
    * Creates a new {@code GitService}.
    *
-   * @param git a connection to Git repository
+   * @param git Git APIs that interact with a repository
    * @param basePath base path to the Git repository
    */
   public GitService(final Git git, final Path basePath) {
@@ -41,13 +45,15 @@ public class GitService {
    *
    * @param revInfo the revision info to compare against
    * @return set of {@code Path} that have changed
-   * @throws IOException if unable to traverse Git repository
-   * @throws GitAPIException if unable to make Git API calls successfully
    */
-  public Set<Path> getChangedFilePaths(final RevInfo revInfo) throws IOException, GitAPIException {
+  public Set<Path> getChangedFilePaths(final RevInfo revInfo) {
     Set<Path> changedPaths = new HashSet<>();
-    changedPaths.addAll(getDiff(revInfo));
-    changedPaths.addAll(getUncommitted());
+    try {
+      changedPaths.addAll(getDiff(revInfo));
+      changedPaths.addAll(getUncommitted());
+    } catch (IOException | GitAPIException ex) {
+      throw new RuntimeException(ex);
+    }
     return changedPaths;
   }
 
@@ -68,17 +74,15 @@ public class GitService {
 
   private Set<Path> getDiff(final RevInfo revInfo) throws IOException, GitAPIException {
     // old tree
-    if (revInfo.getType() == RevInfo.Type.BRANCH) {
-      if (git.getRepository().resolve(revInfo.getValue()) == null) {
-        git.branchCreate().setName(revInfo.getValue()).setStartPoint("origin/" + revInfo.getValue())
-            .call();
-      }
+    String revInfoVal = revInfo.getValue();
+    if (revInfo.getType() == RevInfo.Type.BRANCH
+        && git.getRepository().resolve(revInfoVal) == null) {
+      git.branchCreate().setName(revInfoVal).setStartPoint("origin/" + revInfoVal).call();
     }
 
-    ObjectId oldObjectId = git.getRepository().resolve(revInfo.getValue());
+    ObjectId oldObjectId = git.getRepository().resolve(revInfoVal);
     if (oldObjectId == null) {
-      throw new InvalidRefNameException(
-          revInfo.getValue() + " " + revInfo.getValue() + " does not exist");
+      throw new InvalidRefNameException(revInfo.getType() + " " + revInfoVal + " does not exist");
     }
 
     AbstractTreeIterator oldTree = getTreeIterator(oldObjectId);
@@ -91,6 +95,10 @@ public class GitService {
     List<DiffEntry> diffEntries = git.diff().setOldTree(oldTree).setNewTree(newTree).call();
 
     // changed paths
+    return getDiff(diffEntries);
+  }
+
+  private Set<Path> getDiff(List<DiffEntry> diffEntries) {
     Set<Path> changedPaths = new HashSet<>();
     for (DiffEntry entry : diffEntries) {
       switch (entry.getChangeType()) {

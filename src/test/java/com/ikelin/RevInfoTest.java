@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-class RevInfoTest {
+public class RevInfoTest {
 
   @Test
-  void testCommit() {
+  public void testCommit() {
     Properties properties = mock(Properties.class);
     String commit = "commit";
     doReturn(commit).when(properties)
@@ -27,7 +27,7 @@ class RevInfoTest {
   }
 
   @Test
-  void testBranch() {
+  public void testBranch() {
     Properties properties = mock(Properties.class);
     String branch = "branch";
     doReturn(branch).when(properties)
@@ -40,7 +40,7 @@ class RevInfoTest {
   }
 
   @Test
-  void testTag() {
+  public void testTag() {
     Properties properties = mock(Properties.class);
     String tag = "tag";
     doReturn(tag).when(properties).getProperty(IncrementalBuildsExtension.PROPERTY_PREFIX + ".tag");
@@ -52,7 +52,7 @@ class RevInfoTest {
   }
 
   @Test
-  void testNone() {
+  public void testNone() {
     Properties properties = mock(Properties.class);
 
     RevInfo revInfo = RevInfo.create(properties);

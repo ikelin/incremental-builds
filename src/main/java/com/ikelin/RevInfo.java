@@ -4,6 +4,9 @@ import static com.ikelin.IncrementalBuildsExtension.PROPERTY_PREFIX;
 
 import java.util.Properties;
 
+/**
+ * Model for revision info.
+ */
 public class RevInfo {
 
   public enum Type {
