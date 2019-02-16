@@ -12,6 +12,10 @@ import org.codehaus.plexus.logging.Logger;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * An extension that resets the project list to only projects that changed or impacted by the
+ * changes.
+ */
 @Component(role = AbstractMavenLifecycleParticipant.class)
 public class IncrementalBuildsExtension extends AbstractMavenLifecycleParticipant {
 
@@ -45,6 +49,7 @@ public class IncrementalBuildsExtension extends AbstractMavenLifecycleParticipan
         logger.info("No project has changed since " + revInfo.getType() + " " + revInfo.getValue());
       } else {
         session.setProjects(changedProjects);
+        logger.info("");
         logger.info("Projects changed since " + revInfo.getType() + " " + revInfo.getValue() + ":");
         logger.info("");
         for (MavenProject project : changedProjects) {

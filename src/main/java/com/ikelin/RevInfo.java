@@ -18,6 +18,13 @@ public class RevInfo {
   private final Type type;
   private final String value;
 
+  /**
+   * Creates a new {@code RevInfo}.
+   *
+   * @param type the type of revision info
+   * @param value the value of the revision info, such as git commit sha, git branch name, or
+   *     git tag name
+   */
   public RevInfo(final Type type, final String value) {
     this.type = type;
     this.value = value;
