@@ -1,4 +1,4 @@
-# Maven Incremental Builds Extension for GIT
+# Incremental Builds Extension for GIT
 
 In a Maven multi-module project using GIT, this extension only builds modules that changed or impacted by the changes.
 

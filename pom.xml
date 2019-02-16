@@ -6,11 +6,11 @@
 
   <groupId>com.ikelin</groupId>
   <artifactId>incremental-builds</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>Incremental Builds</name>
-  <description>Maven Incremental Builds Extension for GIT.</description>
+  <description>Incremental Builds Extension for GIT.</description>
   <url>https://github.com/ikelin/incremental-builds.git</url>
 
   <licenses>
