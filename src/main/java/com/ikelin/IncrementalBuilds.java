@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -22,14 +21,12 @@ import java.util.Set;
  */
 public class IncrementalBuilds {
 
-  private final Logger logger;
   private final MavenSession session;
 
   /**
    * Creates a new instance of {@code IncrementalBuilds}.
    */
-  public IncrementalBuilds(final Logger logger, final MavenSession session) {
-    this.logger = logger;
+  public IncrementalBuilds(final MavenSession session) {
     this.session = session;
   }
 

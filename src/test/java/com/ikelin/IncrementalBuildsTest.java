@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +29,7 @@ import java.util.Set;
 public class IncrementalBuildsTest {
 
   @Mock
-  private Logger logger;
-
-  @Mock
   private MavenSession session;
-
-//  @Mock
-//  private Properties properties;
 
   @Mock
   private Git git;
@@ -57,7 +50,7 @@ public class IncrementalBuildsTest {
 
   @BeforeEach
   public void beforeEach() throws IOException {
-    incrementalBuilds = spy(new IncrementalBuilds(logger, session));
+    incrementalBuilds = spy(new IncrementalBuilds(session));
 
     doReturn(git).when(incrementalBuilds).getGit(session);
     doReturn(basePath).when(incrementalBuilds).gitBasePath(git);

@@ -32,7 +32,7 @@ public class IncrementalBuildsExtension extends AbstractMavenLifecycleParticipan
 
     try {
       RevInfo revInfo = RevInfo.create(session.getUserProperties());
-      IncrementalBuilds incrementalBuilds = getIncrementalBuilds(logger, session);
+      IncrementalBuilds incrementalBuilds = getIncrementalBuilds(session);
       List<MavenProject> changedProjects = incrementalBuilds.getChangedProjects(revInfo);
 
       // set session projects to changed projects
@@ -58,8 +58,8 @@ public class IncrementalBuildsExtension extends AbstractMavenLifecycleParticipan
   }
 
   @VisibleForTesting
-  IncrementalBuilds getIncrementalBuilds(final Logger logger, final MavenSession session) {
-    return new IncrementalBuilds(logger, session);
+  IncrementalBuilds getIncrementalBuilds(final MavenSession session) {
+    return new IncrementalBuilds(session);
   }
 
   private boolean isEnabled(final Properties properties) {

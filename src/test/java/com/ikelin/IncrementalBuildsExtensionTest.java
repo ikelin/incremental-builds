@@ -63,7 +63,7 @@ public class IncrementalBuildsExtensionTest {
     when(properties.getProperty(PROPERTY_PREFIX + ".enable")).thenReturn(Boolean.TRUE.toString());
     when(session.getUserProperties()).thenReturn(properties);
     doReturn(incrementalBuilds).when(incrementalBuildsExtension)
-        .getIncrementalBuilds(logger, session);
+        .getIncrementalBuilds(session);
 
     incrementalBuildsExtension.afterProjectsRead(session);
 
@@ -75,7 +75,7 @@ public class IncrementalBuildsExtensionTest {
     when(properties.getProperty(PROPERTY_PREFIX + ".enable")).thenReturn(Boolean.TRUE.toString());
     when(session.getUserProperties()).thenReturn(properties);
     doReturn(incrementalBuilds).when(incrementalBuildsExtension)
-        .getIncrementalBuilds(logger, session);
+        .getIncrementalBuilds(session);
     RuntimeException exception = mock(RuntimeException.class);
     doThrow(exception).when(incrementalBuilds).getChangedProjects(any(RevInfo.class));
 
