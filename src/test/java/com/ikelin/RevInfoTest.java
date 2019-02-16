@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 
 import com.ikelin.RevInfo.Type;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -22,7 +21,7 @@ public class RevInfoTest {
 
     RevInfo revInfo = RevInfo.create(properties);
 
-    Assertions.assertEquals(Type.COMMIT, revInfo.getType());
+    assertEquals(Type.COMMIT, revInfo.getType());
     assertEquals(commit, revInfo.getValue());
   }
 
