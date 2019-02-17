@@ -6,7 +6,7 @@
 
   <groupId>com.ikelin</groupId>
   <artifactId>incremental-builds</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.2</version>
   <packaging>jar</packaging>
 
   <name>Incremental Builds</name>
