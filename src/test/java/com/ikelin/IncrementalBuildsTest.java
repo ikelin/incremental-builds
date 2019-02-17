@@ -1,9 +1,11 @@
 package com.ikelin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -49,17 +51,13 @@ public class IncrementalBuildsTest {
   private IncrementalBuilds incrementalBuilds;
 
   @BeforeEach
-  public void beforeEach() throws IOException {
+  public void beforeEach() {
     incrementalBuilds = spy(new IncrementalBuilds(session));
-
-    doReturn(git).when(incrementalBuilds).getGit(session);
-    doReturn(basePath).when(incrementalBuilds).gitBasePath(git);
-    doReturn(gitService).when(incrementalBuilds).getGitService(git, basePath);
-    doReturn(mavenService).when(incrementalBuilds).getMavenService(session);
   }
 
   @Test
-  public void testNoChangedProjects() {
+  public void testNoChangedProjects() throws IOException {
+    mockIncrementalBuilds();
     Set<Path> changedPaths = new HashSet<>();
     when(gitService.getChangedFilePaths(any(RevInfo.class))).thenReturn(changedPaths);
     when(mavenService.getChangedProjects(changedPaths)).thenReturn(new HashSet<>());
@@ -70,7 +68,8 @@ public class IncrementalBuildsTest {
   }
 
   @Test
-  public void testChangedProjects() {
+  public void testChangedProjects() throws IOException {
+    mockIncrementalBuilds();
     Set<Path> changedPaths = new HashSet<>();
     changedPaths.add(mock(Path.class));
     when(gitService.getChangedFilePaths(any(RevInfo.class))).thenReturn(changedPaths);
@@ -85,5 +84,18 @@ public class IncrementalBuildsTest {
 
     assertEquals(1, actualChangedProjects.size());
     assertTrue(actualChangedProjects.contains(changedProject));
+  }
+
+  @Test
+  public void testChangedProjectsThrowsException() throws IOException {
+    doThrow(IOException.class).when(incrementalBuilds).getGit(any(MavenSession.class));
+    assertThrows(RuntimeException.class, () -> incrementalBuilds.getChangedProjects(revInfo));
+  }
+
+  private void mockIncrementalBuilds() throws IOException {
+    doReturn(git).when(incrementalBuilds).getGit(session);
+    doReturn(basePath).when(incrementalBuilds).gitBasePath(git);
+    doReturn(gitService).when(incrementalBuilds).getGitService(git, basePath);
+    doReturn(mavenService).when(incrementalBuilds).getMavenService(session);
   }
 }

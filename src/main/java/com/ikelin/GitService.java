@@ -111,10 +111,9 @@ public class GitService {
           break;
         case COPY:
         case RENAME:
+        default:
           changedPaths.add(getPath(entry.getNewPath()));
           changedPaths.add(getPath(entry.getOldPath()));
-          break;
-        default:
           break;
       }
     }
